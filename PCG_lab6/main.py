@@ -55,11 +55,6 @@ class PointApp:
         self.canvas.draw()
         self.canvas.get_tk_widget().grid(row=0, column=0, columnspan=7)
 
-        # Инициализация объектов для точек и линий
-        self.scatter = self.ax.scatter([], [], [], c='b', s=50, label='Точки')
-        self.line_collection = Line3DCollection([], colors='r', label='Соединения')
-        self.ax.add_collection3d(self.line_collection)
-
         # Добавление легенды
         self.ax.legend(loc='upper left')
 
@@ -125,20 +120,16 @@ class PointApp:
             x, y, z = zip(*self.current_points)
             self.scatter = self.ax.scatter(x, y, z, c='b', s=50, label='Точки')
 
-        # Создание списка линий
-        lines = []
+        # Создание и отображение линий
         for conn in connections:
             start_idx, end_idx = conn
             try:
                 start_point = self.current_points[start_idx]
                 end_point = self.current_points[end_idx]
-                lines.append([start_point, end_point])
+                x_vals, y_vals, z_vals = zip(start_point, end_point)
+                self.ax.plot(x_vals, y_vals, z_vals, color='r')
             except IndexError:
                 print(f"Ошибка: Индекс соединения {conn} выходит за пределы списка точек.")
-
-        # Создание Line3DCollection
-        self.line_collection = Line3DCollection(lines, colors='r', linewidths=1)
-        self.ax.add_collection3d(self.line_collection)
 
         # Установка границ осей для лучшего отображения
         self.ax.set_xlim([-10, 10])
